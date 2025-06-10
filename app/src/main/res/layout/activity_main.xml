@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#DED4C8"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:background="#BB9C70"
+        android:textColor="@color/black"
+        android:padding="2dp"
+        android:text="Witaj w panelu zamówień!"
+        android:textSize="32dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/daneOsobowe"
+        android:hint="Podaj imię i nazwisko"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <EditText
+        android:id="@+id/numerTelEditText"
+        android:hint="Podaj numer telefonu"
+        android:layout_width="match_parent"
+        android:maxLength="9"
+        android:layout_height="wrap_content"/>
+    <EditText
+        android:id="@+id/adresEditText"
+        android:hint="Podaj adres"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#c0c0c0">
+    </View>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:text="wybierz skład swojej pizzy!"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/pepperoni"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="pepperoni"/>
+
+        <CheckBox
+            android:id="@+id/szynka"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="szynka"/>
+
+        <CheckBox
+            android:id="@+id/salami"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="salami"/>
+
+        <CheckBox
+            android:id="@+id/boczek"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="boczek"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/pomidory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="pomidory"/>
+
+        <CheckBox
+            android:id="@+id/jalapeno"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="jalapeno"/>
+
+        <CheckBox
+            android:id="@+id/pieczarki"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="pieczarki"/>
+
+        <CheckBox
+            android:id="@+id/ser2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ser x2"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/oliwki"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="oliwki"/>
+
+        <CheckBox
+            android:id="@+id/oregano"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="oregano"/>
+
+        <CheckBox
+            android:id="@+id/rukola"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="rukola"/>
+
+        <CheckBox
+            android:id="@+id/tabasco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="tabasco"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#c0c0c0">
+    </View>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Wybierz rodzaj ciasta!"
+        android:textSize="20dp"
+        />
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id="@+id/jasne"
+            android:text="jasne"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <RadioButton
+            android:id="@+id/ciemne"
+            android:text="ciemne"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <RadioButton
+            android:id="@+id/pszenne"
+            android:text="pszenne"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RadioGroup>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#c0c0c0">
+    </View>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:text="wybierz rozmiar pizzy!"/>
+
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/pizzaRozmiar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:text="0"
+        android:gravity="center_horizontal"
+        />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:progress="0"
+        android:max="4"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#c0c0c0">
+    </View>
+<LinearLayout
+    android:background="#BB9C70"
+    android:gravity="right"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <Button
+        android:id="@+id/wyczyscZamowienie"
+        android:layout_marginTop="5dp"
+        android:backgroundTint="#6B3535"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wyczyść Zamówienie"
+        />
+
+    <Button
+        android:id="@+id/zamow"
+        android:layout_margin="5dp"
+        android:backgroundTint="#6B3535"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zamów!"
+        />
+</LinearLayout>
+</LinearLayout>
