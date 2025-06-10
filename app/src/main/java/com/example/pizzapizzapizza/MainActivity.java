@@ -2,7 +2,13 @@
 
 package com.example.pizzapizzapizza;
 
+import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,14 +25,20 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import android.app.NotificationManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String CHANNEL_ID = "DEFAULT_CHANNEL_ID";
     //private LinearLayout linearLayout = (LinearLayout) findViewById(R.id.main);
     private EditText daneOsobowe, numerTelEditText, adresEditText;
     private CheckBox pepperoni, szynka, salami, boczek;
@@ -78,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progressValue, boolean b) {
-                switch (progressValue){
+                switch (progressValue) {
                     case 0:
                         pizzaRozmiar.setText("32cm");
                         break;
@@ -117,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         zamow.setOnClickListener(view -> {
             boolean isValid = false;
             for (CheckBox checkbox : checkBoxes) {
-                if(checkbox.isChecked()){
+                if (checkbox.isChecked()) {
                     checked.add(checkbox.getText().toString());
                 }
             }
@@ -127,17 +139,15 @@ public class MainActivity extends AppCompatActivity {
             String daneOsoboweString = daneOsobowe.getText().toString().trim();
             String numerTelEditTextString = numerTelEditText.getText().toString().trim();
 
-            if(!daneOsoboweString.matches("^[A-Za-z ]+$")){
+            if (!daneOsoboweString.matches("^[A-Za-z ]+$")) {
                 Toast.makeText(this, "Wpisz poprawne dane osobowe!", Toast.LENGTH_SHORT).show();
                 isValid = false;
             }
-            if(!(numerTelEditTextString.matches("^[0-9]+$") && numerTelEditTextString.length() == 9)) {
+            if (!(numerTelEditTextString.matches("^[0-9]+$") && numerTelEditTextString.length() == 9)) {
                 Toast.makeText(this, "Wpisz poprawny numer telefonu!", Toast.LENGTH_SHORT).show();
                 isValid = false;
             }
-
-
-            if(isValid){
+            if (isValid) {
                 showAlertDialog();
             }
 
@@ -153,14 +163,14 @@ public class MainActivity extends AppCompatActivity {
             pizzaRozmiar.setText("32cm");
 
             for (CheckBox checkbox : checkBoxes) {
-                if(checkbox.isChecked()){
+                if (checkbox.isChecked()) {
                     checkbox.setChecked(false);
                 }
             }
         });
     }
 
-    private void showAlertDialog(){
+    private void showAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setTitle("Zamówienie");
@@ -170,9 +180,48 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                sendNotification();
             }
         });
         builder.create().show();
+    }
+
+    private void sendNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+                    PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        100);
+                createNotificationChannel();
+            }
+        }
+        Intent intent = new Intent(this, PaymentActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setContentTitle("Prosimy o zapłatę!")
+                .setContentText("Kliknij w powiadomienie, aby zapłacić!")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(1, builder.build());
+
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Kanał Ogólny";
+            String description = "Domyślny kanał dla powiadomień";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("DEFAULT_CHANNEL_ID", name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }
