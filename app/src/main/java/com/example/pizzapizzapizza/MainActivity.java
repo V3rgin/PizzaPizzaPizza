@@ -50,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar seekBar;
     private Button wyczyscZamowienie, zamow;
 
+    private double ciastoMnoznik = 1.0;
+    private double ciastoRodzajCena = 0.0;
+    private double dodatkiCena = 0.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,15 +99,19 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 1:
                         pizzaRozmiar.setText("42cm");
+                        ciastoMnoznik = 1.25;
                         break;
                     case 2:
                         pizzaRozmiar.setText("52cm");
+                        ciastoMnoznik = 1.4;
                         break;
                     case 3:
                         pizzaRozmiar.setText("69cm");
+                        ciastoMnoznik = 1.6;
                         break;
                     case 4:
                         pizzaRozmiar.setText("100cm");
+                        ciastoMnoznik = 2.0;
                         break;
                 }
             }
@@ -127,32 +134,57 @@ public class MainActivity extends AppCompatActivity {
         List<String> checked = new ArrayList<>();
 
         zamow.setOnClickListener(view -> {
-            boolean isValid = false;
             for (CheckBox checkbox : checkBoxes) {
                 if (checkbox.isChecked()) {
+                    dodatkiCena += 1.0;
                     checked.add(checkbox.getText().toString());
                 }
             }
 
-            isValid = true;
-            //walidacja danych osobowych
+            boolean isValid = true;
+
+
+            //walidacja danych osobowych, isValid sprawdza czy dane osobowe, numer i adres zostały podane i czy numer i dane osobowe poprawnie
             String daneOsoboweString = daneOsobowe.getText().toString().trim();
             String numerTelEditTextString = numerTelEditText.getText().toString().trim();
+            String adresEditTextString = adresEditText.getText().toString().trim();
 
             if (!daneOsoboweString.matches("^[A-Za-z ]+$")) {
                 Toast.makeText(this, "Wpisz poprawne dane osobowe!", Toast.LENGTH_SHORT).show();
                 isValid = false;
             }
+
             if (!(numerTelEditTextString.matches("^[0-9]+$") && numerTelEditTextString.length() == 9)) {
                 Toast.makeText(this, "Wpisz poprawny numer telefonu!", Toast.LENGTH_SHORT).show();
                 isValid = false;
             }
-            if (isValid) {
-                showAlertDialog();
+
+            if(adresEditTextString.isEmpty()){
+                Toast.makeText(this, "Wpisz adres!", Toast.LENGTH_SHORT).show();
+                isValid = false;
+            }
+
+            //Sprawdzanie Radio button
+
+            int radioButtonChoice = radioGroup.getCheckedRadioButtonId();
+
+            if(radioButtonChoice == R.id.jasne){
+                ciastoRodzajCena = 20;
+            } else if (radioButtonChoice == R.id.ciemne){
+                ciastoRodzajCena = 25;
+            } else if (radioButtonChoice == R.id.pszenne) {
+                ciastoRodzajCena = 30;
+            } else {
+                Toast.makeText(this, "Wybierz ciasto!", Toast.LENGTH_SHORT).show();
+                isValid = false;
             }
 
 
+            if (isValid) {
+                showAlertDialog();
+            }
         });
+
         //czyszczenie
         wyczyscZamowienie.setOnClickListener(view -> {
             daneOsobowe.setText("");
@@ -197,7 +229,11 @@ public class MainActivity extends AppCompatActivity {
                 createNotificationChannel();
             }
         }
+
+
         Intent intent = new Intent(this, PaymentActivity.class);
+        intent.putExtra("pizza" , String.valueOf((ciastoRodzajCena * ciastoMnoznik) + dodatkiCena));
+
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)

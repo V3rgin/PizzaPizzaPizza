@@ -3,29 +3,43 @@ package com.example.pizzapizzapizza;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.net.Proxy;
+
 public class PaymentActivity extends AppCompatActivity {
-    private TextView cena;
-    private EditText zaplata;
-    private Button potwierdz;
+    private TextView cenaTextView;
+    private EditText zaplataEditText;
+    private Button potwierdzButton;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.payment_form);
 
-        cena = findViewById(R.id.cena);
-        zaplata = findViewById(R.id.zaplata);
-        potwierdz = findViewById(R.id.potwierdz);
+        cenaTextView = findViewById(R.id.cenaTextView);
+        zaplataEditText = findViewById(R.id.zaplataEditText);
+        potwierdzButton = findViewById(R.id.potwierdzButton);
 
-        potwierdz.setOnClickListener(view -> {
-            showAlertDialog();
+        String getCena = getIntent().getStringExtra("pizza");
+        cenaTextView.setText(getCena);
+
+        potwierdzButton.setOnClickListener(view -> {
+            String zaplataEditTextString = zaplataEditText.getText().toString().trim();
+
+            if (getCena.equals(zaplataEditTextString)) {
+                showAlertDialog();
+            } else {
+                Toast.makeText(this, "Wpisz poprawną cenę!", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
