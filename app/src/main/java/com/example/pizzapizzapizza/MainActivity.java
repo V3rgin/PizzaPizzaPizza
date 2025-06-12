@@ -32,6 +32,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
 import android.app.NotificationManager;
 
 import java.util.ArrayList;
@@ -59,36 +60,33 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        {
-            daneOsobowe = findViewById(R.id.daneOsobowe);
-            numerTelEditText = findViewById(R.id.numerTelEditText);
-            adresEditText = findViewById(R.id.adresEditText);
-            pepperoni = findViewById(R.id.pepperoni);
-            szynka = findViewById(R.id.szynka);
-            salami = findViewById(R.id.salami);
-            boczek = findViewById(R.id.boczek);
-            pomidory = findViewById(R.id.pomidory);
-            jalapeno = findViewById(R.id.jalapeno);
-            pieczarki = findViewById(R.id.pieczarki);
-            ser2 = findViewById(R.id.ser2);
-            oliwki = findViewById(R.id.oliwki);
-            oregano = findViewById(R.id.oregano);
-            rukola = findViewById(R.id.rukola);
-            tabasco = findViewById(R.id.tabasco);
-            jasne = findViewById(R.id.jasne);
-            ciemne = findViewById(R.id.ciemne);
-            pszenne = findViewById(R.id.pszenne);
-            radioGroup = findViewById(R.id.radioGroup);
-            pizzaRozmiar = findViewById(R.id.pizzaRozmiar);
-            seekBar = findViewById(R.id.seekBar);
-            wyczyscZamowienie = findViewById(R.id.wyczyscZamowienie);
-            zamow = findViewById(R.id.zamow);
-        }
-
+        daneOsobowe = findViewById(R.id.daneOsobowe);
+        numerTelEditText = findViewById(R.id.numerTelEditText);
+        adresEditText = findViewById(R.id.adresEditText);
+        pepperoni = findViewById(R.id.pepperoni);
+        szynka = findViewById(R.id.szynka);
+        salami = findViewById(R.id.salami);
+        boczek = findViewById(R.id.boczek);
+        pomidory = findViewById(R.id.pomidory);
+        jalapeno = findViewById(R.id.jalapeno);
+        pieczarki = findViewById(R.id.pieczarki);
+        ser2 = findViewById(R.id.ser2);
+        oliwki = findViewById(R.id.oliwki);
+        oregano = findViewById(R.id.oregano);
+        rukola = findViewById(R.id.rukola);
+        tabasco = findViewById(R.id.tabasco);
+        jasne = findViewById(R.id.jasne);
+        ciemne = findViewById(R.id.ciemne);
+        pszenne = findViewById(R.id.pszenne);
+        radioGroup = findViewById(R.id.radioGroup);
+        pizzaRozmiar = findViewById(R.id.pizzaRozmiar);
+        seekBar = findViewById(R.id.seekBar);
+        wyczyscZamowienie = findViewById(R.id.wyczyscZamowienie);
+        zamow = findViewById(R.id.zamow);
 
         //Seekbar Pizzy (rozmiar)
         pizzaRozmiar.setText("32cm");
+        seekBar.setProgress(0);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -144,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             boolean isValid = true;
 
 
-            //walidacja danych osobowych, isValid sprawdza czy dane osobowe, numer i adres zostały podane i czy numer i dane osobowe poprawnie
+            //walidacja danych osobowych, isValid sprawdza czy dane osobowe, numer i adres zostały podane i czy numer i dane osobowe poprawnie, a adres czy nie jest pusty
             String daneOsoboweString = daneOsobowe.getText().toString().trim();
             String numerTelEditTextString = numerTelEditText.getText().toString().trim();
             String adresEditTextString = adresEditText.getText().toString().trim();
@@ -159,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 isValid = false;
             }
 
-            if(adresEditTextString.isEmpty()){
+            if (adresEditTextString.isEmpty()) {
                 Toast.makeText(this, "Wpisz adres!", Toast.LENGTH_SHORT).show();
                 isValid = false;
             }
@@ -168,9 +166,9 @@ public class MainActivity extends AppCompatActivity {
 
             int radioButtonChoice = radioGroup.getCheckedRadioButtonId();
 
-            if(radioButtonChoice == R.id.jasne){
+            if (radioButtonChoice == R.id.jasne) {
                 ciastoRodzajCena = 20;
-            } else if (radioButtonChoice == R.id.ciemne){
+            } else if (radioButtonChoice == R.id.ciemne) {
                 ciastoRodzajCena = 25;
             } else if (radioButtonChoice == R.id.pszenne) {
                 ciastoRodzajCena = 30;
@@ -206,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setTitle("Zamówienie");
-        builder.setMessage("Dziękujęmy za zamówienie! Po kliknięciu w powiadomoenie, zostaną " +
+        builder.setMessage("Dziękujęmy za zamówienie! Po kliknięciu w powiadomienie, zostaną " +
                 "państwo przesłani do formularza zapłaty");
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -232,7 +230,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         Intent intent = new Intent(this, PaymentActivity.class);
-        intent.putExtra("pizza" , String.valueOf((ciastoRodzajCena * ciastoMnoznik) + dodatkiCena));
+        intent.putExtra("pizza", String.valueOf((ciastoRodzajCena * ciastoMnoznik) + dodatkiCena));
+        //zerowanie dodatków, aby nie dodawały się ciągiem
+        dodatkiCena = 0;
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
