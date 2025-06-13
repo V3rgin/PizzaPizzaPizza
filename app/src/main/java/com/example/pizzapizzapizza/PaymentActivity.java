@@ -30,7 +30,7 @@ public class PaymentActivity extends AppCompatActivity {
         potwierdzButton = findViewById(R.id.potwierdzButton);
 
         String getCena = getIntent().getStringExtra("pizza");
-        cenaTextView.setText(getCena);
+        cenaTextView.setText(getCena + "zł");
 
         potwierdzButton.setOnClickListener(view -> {
             String zaplataEditTextString = zaplataEditText.getText().toString().trim();
@@ -55,7 +55,19 @@ public class PaymentActivity extends AppCompatActivity {
                 Intent intent = new Intent(PaymentActivity.this, MainActivity.class);
                 startActivity(intent);
             }
+
         });
+
+        builder.setNegativeButton("Chce jeszcze zamowić!", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(PaymentActivity.this, MainActivity.class);
+                intent.putExtra("kolejneZamowienie", "tak");
+                startActivity(intent);
+            }
+
+        });
+
         builder.create().show();
     }
 }

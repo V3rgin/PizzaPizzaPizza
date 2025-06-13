@@ -7,6 +7,7 @@ import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -55,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private double ciastoRodzajCena = 0.0;
     private double dodatkiCena = 0.0;
 
+    private final List<String> resultChecked = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         wyczyscZamowienie = findViewById(R.id.wyczyscZamowienie);
         zamow = findViewById(R.id.zamow);
 
+
         //Seekbar Pizzy (rozmiar)
         pizzaRozmiar.setText("32cm");
         seekBar.setProgress(0);
@@ -101,11 +105,11 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 2:
                         pizzaRozmiar.setText("52cm");
-                        ciastoMnoznik = 1.4;
+                        ciastoMnoznik = 1.45;
                         break;
                     case 3:
                         pizzaRozmiar.setText("69cm");
-                        ciastoMnoznik = 1.6;
+                        ciastoMnoznik = 1.65;
                         break;
                     case 4:
                         pizzaRozmiar.setText("100cm");
@@ -136,11 +140,11 @@ public class MainActivity extends AppCompatActivity {
                 if (checkbox.isChecked()) {
                     dodatkiCena += 1.0;
                     checked.add(checkbox.getText().toString());
+                    resultChecked.add(checkbox.getText().toString());
                 }
             }
 
             boolean isValid = true;
-
 
             //walidacja danych osobowych, isValid sprawdza czy dane osobowe, numer i adres zostały podane i czy numer i dane osobowe poprawnie, a adres czy nie jest pusty
             String daneOsoboweString = daneOsobowe.getText().toString().trim();
@@ -177,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
                 isValid = false;
             }
 
-
             if (isValid) {
                 showAlertDialog();
             }
@@ -200,12 +203,34 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private String wynikZamowienia() {
+        String rodzajCiasta = "";
+        String skladniki = "";
+        String rozmiarPizzy;
+
+        int radioButtonChoice = radioGroup.getCheckedRadioButtonId();
+        if (radioButtonChoice == R.id.jasne) {
+            rodzajCiasta = "jasne";
+        } else if (radioButtonChoice == R.id.ciemne) {
+            rodzajCiasta = "ciemne";
+        } else if (radioButtonChoice == R.id.pszenne) {
+            rodzajCiasta = "pszenne";
+        }
+
+        for (int i = 0; i < resultChecked.size(); i++) {
+            skladniki += resultChecked.get(i) + ", ";
+        }
+
+        rozmiarPizzy = String.valueOf(pizzaRozmiar.getText());
+
+        return " Ciasto: " + rodzajCiasta + ",\n Skladniki: " + skladniki + "\n Rozmiar Pizzy: " + rozmiarPizzy + "\n \n Po klinknięciu 'OK' zostanie wysłane" + "\n powiadomienie z formularzem zaplaty.";
+    }
+
     private void showAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setTitle("Zamówienie");
-        builder.setMessage("Dziękujęmy za zamówienie! Po kliknięciu w powiadomienie, zostaną " +
-                "państwo przesłani do formularza zapłaty");
+        builder.setTitle("Wynik zamówienia: ");
+        builder.setMessage(wynikZamowienia());
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -228,10 +253,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
         Intent intent = new Intent(this, PaymentActivity.class);
         intent.putExtra("pizza", String.valueOf((ciastoRodzajCena * ciastoMnoznik) + dodatkiCena));
-        //zerowanie dodatków, aby nie dodawały się ciągiem
+
+        //zerowanie dodatków, aby poszczególne zamówienia nie dodawały się do siebie
         dodatkiCena = 0;
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -260,4 +285,40 @@ public class MainActivity extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
     }
+
+    private void saveInformation() {
+        SharedPreferences preferences = getSharedPreferences("mojeDane", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        editor.putString("DaneOsobowe", daneOsobowe.getText().toString());
+        editor.putString("NumerTelefonu", numerTelEditText.getText().toString());
+        editor.putString("Adres", adresEditText.getText().toString());
+
+        editor.apply();
+    }
+
+    private void setSavedInformation() {
+        SharedPreferences preferences = getSharedPreferences("mojeDane", MODE_PRIVATE);
+        daneOsobowe.setText(preferences.getString("DaneOsobowe", ""));
+        numerTelEditText.setText(preferences.getString("NumerTelefonu", ""));
+        adresEditText.setText(preferences.getString("Adres", ""));
+    }
+
+    protected void onPause() {
+        super.onPause();
+        saveInformation();
+    }
+
+    protected void onResume() {
+        super.onResume();
+        String czyKolejneZamowienie = getIntent().getStringExtra("kolejneZamowienie");
+
+        //nie działa w drugą stronę, więc sprawdza czy String "tak", równy jest przesłanej wartości w intencie, jeśli tak, to wstaw informacje zapisane
+        //dzięki metodzie Sharedpreferences();
+
+        if ("tak".equals(czyKolejneZamowienie)) {
+            setSavedInformation();
+        }
+    }
+
 }
